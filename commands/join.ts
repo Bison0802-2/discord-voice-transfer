@@ -1,3 +1,4 @@
+import { joinVoiceChannel } from "@discordjs/voice";
 import {
   AutocompleteInteraction,
   ChannelType,
@@ -7,12 +8,10 @@ import {
 } from "discord.js";
 import { autoCompleteChannels } from "../components/autoCompleteChannels";
 
-import { joinVoiceChannel } from "@discordjs/voice";
-
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("autocomplete")
-    .setDescription("autocomplete")
+    .setName("join")
+    .setDescription("VCに参加。")
     .addChannelOption((option) =>
       option
         .setName("channel1")
@@ -84,6 +83,8 @@ module.exports = {
       });
       await interaction.reply("VCに参加しました！");
       return [connection1, connection2];
+    } else {
+      await interaction.reply("BOTを参加させるVCを指定してください！");
     }
   },
 };

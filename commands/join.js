@@ -1,80 +1,69 @@
-const { SlashCommandBuilder, ChannelType } = require('discord.js');
-const { joinVoiceChannel } = require('@discordjs/voice');
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const voice_1 = require("@discordjs/voice");
+const discord_js_1 = require("discord.js");
+const autoCompleteChannels_1 = require("../components/autoCompleteChannels");
 module.exports = {
-	data: new SlashCommandBuilder()
-        // コマンドの名前
-		.setName('join')
-        // コマンドの説明文
-		.setDescription('VCに参加。')
-		// コマンドのオプションを追加
-		.addChannelOption((option) =>
-			option
-				.setName('channel1')
-				.setDescription('The channel that Listener-bot join')
-				.setRequired(true)
-				.addChannelTypes(ChannelType.GuildVoice),
-		)
-		.addStringOption((option) =>
-			option
-				.setName('channel2')
-				.setDescription('The channel that Speaker-bot join')
-				.setAutocomplete(true)
-				.setRequired(true),
-		),
-		async autocomplete(interaction) {
-		const focusedValue = interaction.options.getFocused();
-		const vc = interaction.options.get('channel1');
-		const chats = interaction.guild.channels.cache;
-		const voiceChannels = chats.filter(file => file.type === 2);
-		let unSelectedVoiceChannels = [];
-
-		for (const voiceChannel of voiceChannels) {
-			if (voiceChannel[0] !== vc.value) {
-				unSelectedVoiceChannels.push(voiceChannel);
-			}
-		}
-		
-		const filtered = unSelectedVoiceChannels.filter(unSelectedVoiceChannel => unSelectedVoiceChannel[1].name.startsWith(focusedValue));
-
-		await interaction.respond(
-			
-			filtered.map(unSelectedVoiceChannel => ({ name: unSelectedVoiceChannel[1].name, value: unSelectedVoiceChannel[1].id })).slice(0, 25)
-		);
-	},
-	async execute(interaction, client1, client2) {
-		const voiceChannel1 = interaction.options.getChannel('channel1');
-		const voiceChannel2 = interaction.options.getString('channel2');
-		if (voiceChannel1 && voiceChannel2) {
-			if (voiceChannel1 === voiceChannel2) {
-				await interaction.reply('同じVCには参加できません🥺');
-				return;
-			}
-			// Listener-botがVCに参加する処理
-			const connection1 = joinVoiceChannel({
-				// なぜかはわからないが、groupの指定をしないと、先にVCに入っているBOTがVCを移動するだけになってしまうので、記述。
-				group: 'listener',
-				guildId: interaction.guildId,
-				channelId: voiceChannel1.id,
-				// どっちのBOTを動かしてあげるかの指定をしてあげる。
-				adapterCreator: client1.guilds.cache.get(interaction.guildId).voiceAdapterCreator,
-				// VC参加時にマイクミュート、スピーカーミュートにするか否か
-				selfMute: true,
-				selfDeaf: false,
-			});
-			// Speaker-botがVCに参加する処理
-			const connection2 = joinVoiceChannel({
-				group: 'speaker',
-				guildId: interaction.guildId,
-				channelId: voiceChannel2,
-				adapterCreator: client2.guilds.cache.get(interaction.guildId).voiceAdapterCreator,
-				selfMute: false,
-				selfDeaf: true,
-			});
-			await interaction.reply('VCに参加しました！');
-			return [connection1, connection2];
-		}
-		else {
-			await interaction.reply('BOTを参加させるVCを指定してください！');
-		}
-	},
+    data: new discord_js_1.SlashCommandBuilder()
+        .setName("join")
+        .setDescription("VCに参加。")
+        .addChannelOption((option) => option
+        .setName("channel1")
+        .setDescription("The channel that Listener-bot join")
+        .setRequired(true)
+        .addChannelTypes(discord_js_1.ChannelType.GuildVoice))
+        .addChannelOption((option) => option
+        .setName("channel2")
+        .setDescription("The channel that Speaker-bot join")
+        .setRequired(true)
+        .addChannelTypes(discord_js_1.ChannelType.GuildVoice)),
+    async autocomplete(interaction) {
+        await (0, autoCompleteChannels_1.autoCompleteChannels)(interaction);
+    },
+    async execute(interaction, listenerClient, speakerClient) {
+        const voiceChannel1 = interaction.options.getChannel("channel1");
+        const voiceChannel2 = interaction.options.getChannel("channel2");
+        if (voiceChannel1 && voiceChannel2) {
+            if (voiceChannel1 === voiceChannel2) {
+                await interaction.reply("同じ VC には参加できません🥺");
+                return;
+            }
+            const guildId = interaction.guildId;
+            if (!guildId) {
+                await interaction.reply("このコマンドはサーバー内でのみ使用できます。");
+                return;
+            }
+            const listenerVoiceAdapterCreator = listenerClient.guilds.cache.get(guildId)?.voiceAdapterCreator;
+            const speakerVoiceAdapterCreator2 = speakerClient.guilds.cache.get(guildId)?.voiceAdapterCreator;
+            if (!listenerVoiceAdapterCreator) {
+                await interaction.reply("Listener-botがこのサーバーに参加していません。");
+                return;
+            }
+            if (!speakerVoiceAdapterCreator2) {
+                await interaction.reply("Speaker-botがこのサーバーに参加していません。");
+                return;
+            }
+            const connection1 = (0, voice_1.joinVoiceChannel)({
+                group: "listener",
+                guildId: guildId,
+                channelId: voiceChannel1.id,
+                adapterCreator: listenerVoiceAdapterCreator,
+                selfMute: true,
+                selfDeaf: false,
+            });
+            const connection2 = (0, voice_1.joinVoiceChannel)({
+                group: "speaker",
+                guildId: guildId,
+                channelId: voiceChannel2.id,
+                adapterCreator: speakerVoiceAdapterCreator2,
+                selfMute: false,
+                selfDeaf: true,
+            });
+            await interaction.reply("VCに参加しました！");
+            return [connection1, connection2];
+        }
+        else {
+            await interaction.reply("BOTを参加させるVCを指定してください！");
+        }
+    },
 };

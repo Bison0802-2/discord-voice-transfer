@@ -1,15 +1,14 @@
-const { SlashCommandBuilder, ChannelType } = require("discord.js");
-const {
-  joinVoiceChannel,
+import {
   createAudioPlayer,
-  NoSubscriberBehavior,
-  EndBehaviorType,
   createAudioResource,
+  joinVoiceChannel,
+  NoSubscriberBehavior,
   StreamType,
-} = require("@discordjs/voice");
-const AudioMixer = require("audio-mixer");
-const Prism = require("prism-media");
-const { PassThrough } = require("stream");
+} from "@discordjs/voice";
+import AudioMixer from "audio-mixer";
+import { ChannelType, SlashCommandBuilder } from "discord.js";
+import Prism from "prism-media";
+import { PassThrough } from "stream";
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -29,31 +28,8 @@ module.exports = {
         .setAutocomplete(true)
         .setRequired(true)
     ),
-  async autocomplete(interaction) {
-    const focusedValue = interaction.options.getFocused();
-    const vc = interaction.options.get("channel1");
-    const chats = interaction.guild.channels.cache;
-    const voiceChannels = chats.filter((file) => file.type === 2);
-    let unSelectedVoiceChannels = [];
-
-    for (const voiceChannel of voiceChannels) {
-      if (voiceChannel[0] !== vc.value) {
-        unSelectedVoiceChannels.push(voiceChannel);
-      }
-    }
-
-    const filtered = unSelectedVoiceChannels.filter((unSelectedVoiceChannel) =>
-      unSelectedVoiceChannel[1].name.startsWith(focusedValue)
-    );
-
-    await interaction.respond(
-      filtered
-        .map((unSelectedVoiceChannel) => ({
-          name: unSelectedVoiceChannel[1].name,
-          value: unSelectedVoiceChannel[1].id,
-        }))
-        .slice(0, 25)
-    );
+  async autocomplete(interaction: AutocompleteInteraction) {
+    await autoCompleteChannels(interaction);
   },
   async execute(interaction, client1, client2) {
     const voiceChannel1 = interaction.options.getChannel("channel1");

@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
+const autoCompleteChannels_1 = require("../components/autoCompleteChannels");
 const voice_1 = require("@discordjs/voice");
 module.exports = {
     data: new discord_js_1.SlashCommandBuilder()
@@ -14,29 +15,10 @@ module.exports = {
         .addChannelOption((option) => option
         .setName("channel2")
         .setDescription("The channel that Speaker-bot join")
-        // .setRequired(true)
+        .setRequired(true)
         .addChannelTypes(discord_js_1.ChannelType.GuildVoice)),
     async autocomplete(interaction) {
-        const focusedValue = interaction.options.getFocused();
-        const vc = interaction.options.get("channel1");
-        const chats = interaction.guild?.channels.cache;
-        const voiceChannels = chats?.filter((file) => file.type === 2);
-        let unSelectedVoiceChannels = [];
-        if (!voiceChannels || !vc) {
-            return;
-        }
-        for (const voiceChannel of voiceChannels) {
-            if (voiceChannel[0] !== vc.value) {
-                unSelectedVoiceChannels.push(voiceChannel);
-            }
-        }
-        const filtered = unSelectedVoiceChannels.filter((unSelectedVoiceChannel) => unSelectedVoiceChannel[1].name.startsWith(focusedValue));
-        await interaction.respond(filtered
-            .map((unSelectedVoiceChannel) => ({
-            name: unSelectedVoiceChannel[1].name,
-            value: unSelectedVoiceChannel[1].id,
-        }))
-            .slice(0, 25));
+        await (0, autoCompleteChannels_1.autoCompleteChannels)(interaction);
     },
     async execute(interaction, listenerClient, speakerClient) {
         const voiceChannel1 = interaction.options.getChannel("channel1");
