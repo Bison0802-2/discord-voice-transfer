@@ -62,6 +62,7 @@ module.exports = {
                 return;
             }
             const connection1 = (0, voice_1.joinVoiceChannel)({
+                group: "listener",
                 guildId: guildId,
                 channelId: voiceChannel1.id,
                 adapterCreator: listenerVoiceAdapterCreator,
@@ -69,6 +70,7 @@ module.exports = {
                 selfDeaf: false,
             });
             const connection2 = (0, voice_1.joinVoiceChannel)({
+                group: "speaker",
                 guildId: guildId,
                 channelId: voiceChannel2.id,
                 adapterCreator: speakerVoiceAdapterCreator2,
