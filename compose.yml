@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  discord-bot:
+    build:
+      context: .
+    container_name: discord-bot
+    volumes:
+      - .:/app
+    command: ["node", "index.js"]
+    environment:
+      - NODE_ENV=development
+    ports:
+      - "3000:3000"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
