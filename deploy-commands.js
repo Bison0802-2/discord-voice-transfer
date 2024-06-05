@@ -5,7 +5,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const fs_1 = __importDefault(require("fs"));
-const config_json_1 = require("./config.json");
+const LISTENER_CLIENT_ID = process.env.LISTENER_CLIENT_ID;
+const LISTENER_TOKEN = process.env.LISTENER_TOKEN;
+if (!LISTENER_CLIENT_ID) {
+    console.error("LISTENER_CLIENT_ID is not set.");
+    process.exit(1);
+}
+if (!LISTENER_TOKEN) {
+    console.error("LISTENER_TOKEN is not set.");
+    process.exit(1);
+}
 const commands = [];
 const commandFiles = fs_1.default
     .readdirSync("./commands")
@@ -16,13 +25,13 @@ for (const file of commandFiles) {
 }
 console.log("%o", commands);
 // Construct and prepare an instance of the REST module
-const rest = new discord_js_1.REST({ version: "10" }).setToken(config_json_1.LISTENER.TOKEN);
+const rest = new discord_js_1.REST({ version: "10" }).setToken(LISTENER_TOKEN);
 // and deploy your commands!
 (async () => {
     try {
         console.log(`Started refreshing ${commands.length} application (/) commands.`);
         // The put method is used to fully refresh all commands in the guild with the current set
-        const data = await rest.put(discord_js_1.Routes.applicationCommands(config_json_1.LISTENER.CLIENT_ID), { body: commands });
+        const data = await rest.put(discord_js_1.Routes.applicationCommands(LISTENER_CLIENT_ID), { body: commands });
         if (!Array.isArray(data)) {
             throw new Error("data is not an array");
         }

@@ -53,8 +53,9 @@ module.exports = {
     listenerClient: Client,
     speakerClient: Client
   ) {
-    const voiceChannel1 = interaction.options.getChannel("channel1");
-    const voiceChannel2 = interaction.options.getChannel("channel2");
+    const voiceChannel1 = interaction.options.getChannel("聞きたいチャンネル");
+    const voiceChannel2 =
+      interaction.options.getChannel("音声を流すチャンネル");
     if (voiceChannel1 && voiceChannel2) {
       if (voiceChannel1 === voiceChannel2) {
         await interaction.reply(

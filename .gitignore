@@ -5,3 +5,5 @@ config.json
 .vscode/
 *.mp3
 rec/*
+
+.envrc

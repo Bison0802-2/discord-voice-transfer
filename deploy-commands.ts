@@ -1,6 +1,17 @@
 import { REST, Routes } from "discord.js";
 import fs from "fs";
-import { LISTENER } from "./config.json";
+
+const LISTENER_CLIENT_ID = process.env.LISTENER_CLIENT_ID;
+const LISTENER_TOKEN = process.env.LISTENER_TOKEN;
+
+if (!LISTENER_CLIENT_ID) {
+  console.error("LISTENER_CLIENT_ID is not set.");
+  process.exit(1);
+}
+if (!LISTENER_TOKEN) {
+  console.error("LISTENER_TOKEN is not set.");
+  process.exit(1);
+}
 
 const commands = [];
 const commandFiles = fs
@@ -14,7 +25,7 @@ for (const file of commandFiles) {
 console.log("%o", commands);
 
 // Construct and prepare an instance of the REST module
-const rest = new REST({ version: "10" }).setToken(LISTENER.TOKEN);
+const rest = new REST({ version: "10" }).setToken(LISTENER_TOKEN);
 
 // and deploy your commands!
 (async () => {
@@ -25,7 +36,7 @@ const rest = new REST({ version: "10" }).setToken(LISTENER.TOKEN);
 
     // The put method is used to fully refresh all commands in the guild with the current set
     const data = await rest.put(
-      Routes.applicationCommands(LISTENER.CLIENT_ID),
+      Routes.applicationCommands(LISTENER_CLIENT_ID),
       { body: commands }
     );
     if (!Array.isArray(data)) {

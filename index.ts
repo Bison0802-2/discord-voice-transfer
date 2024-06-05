@@ -3,7 +3,18 @@ import path from "node:path";
 
 import { VoiceConnection } from "@discordjs/voice";
 import { Client, Collection, Events, GatewayIntentBits } from "discord.js";
-import { LISTENER, SPEAKER } from "./config.json";
+
+const LISTENER_TOKEN = process.env.LISTENER_TOKEN;
+const SPEAKER_TOKEN = process.env.SPEAKER_TOKEN;
+
+if (!LISTENER_TOKEN) {
+  console.error("LISTENER_TOKEN is not set.");
+  process.exit(1);
+}
+if (!SPEAKER_TOKEN) {
+  console.error("SPEAKER_TOKEN is not set.");
+  process.exit(1);
+}
 
 type hasExecute = {
   data: {
@@ -97,5 +108,5 @@ client2.once(Events.ClientReady, (c) => {
   console.log(`Ready! Logged in as ${c.user.tag}`);
 });
 
-client1.login(LISTENER.TOKEN);
-client2.login(SPEAKER.TOKEN);
+client1.login(LISTENER_TOKEN);
+client2.login(SPEAKER_TOKEN);

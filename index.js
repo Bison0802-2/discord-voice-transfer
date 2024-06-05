@@ -6,7 +6,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
 const discord_js_1 = require("discord.js");
-const config_json_1 = require("./config.json");
+const LISTENER_TOKEN = process.env.LISTENER_TOKEN;
+const SPEAKER_TOKEN = process.env.SPEAKER_TOKEN;
+if (!LISTENER_TOKEN) {
+    console.error("LISTENER_TOKEN is not set.");
+    process.exit(1);
+}
+if (!SPEAKER_TOKEN) {
+    console.error("SPEAKER_TOKEN is not set.");
+    process.exit(1);
+}
 const client1 = new discord_js_1.Client({
     intents: [discord_js_1.GatewayIntentBits.Guilds, discord_js_1.GatewayIntentBits.GuildVoiceStates],
 });
@@ -83,5 +92,5 @@ client1.once(discord_js_1.Events.ClientReady, (c) => {
 client2.once(discord_js_1.Events.ClientReady, (c) => {
     console.log(`Ready! Logged in as ${c.user.tag}`);
 });
-client1.login(config_json_1.LISTENER.TOKEN);
-client2.login(config_json_1.SPEAKER.TOKEN);
+client1.login(LISTENER_TOKEN);
+client2.login(SPEAKER_TOKEN);

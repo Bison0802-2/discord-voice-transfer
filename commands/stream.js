@@ -53,8 +53,8 @@ module.exports = {
         await (0, autoCompleteChannels_1.autoCompleteChannels)(interaction);
     },
     async execute(interaction, listenerClient, speakerClient) {
-        const voiceChannel1 = interaction.options.getChannel("channel1");
-        const voiceChannel2 = interaction.options.getChannel("channel2");
+        const voiceChannel1 = interaction.options.getChannel("聞きたいチャンネル");
+        const voiceChannel2 = interaction.options.getChannel("音声を流すチャンネル");
         if (voiceChannel1 && voiceChannel2) {
             if (voiceChannel1 === voiceChannel2) {
                 await interaction.reply("リスナーとスピーカーを同じ VC に参加させることはできません🥺");

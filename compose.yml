@@ -10,6 +10,10 @@ services:
     command: ["node", "index.js"]
     environment:
       - NODE_ENV=development
+      - LISTENER_CLIENT_ID=${LISTENER_CLIENT_ID}
+      - LISTENER_TOKEN=${LISTENER_TOKEN}
+      - SPEAKER_CLIENT_ID=${SPEAKER_CLIENT_ID}
+      - SPEAKER_TOKEN=${SPEAKER_TOKEN}
     ports:
       - "3000:3000"
     logging:
