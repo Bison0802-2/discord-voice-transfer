@@ -26,14 +26,14 @@ module.exports = {
     .setDescription("VCを中継。")
     .addChannelOption((option) =>
       option
-        .setName("channel1")
+        .setName("聞きたいチャンネル")
         .setDescription("The channel that Listener-bot join")
         .setRequired(true)
         .addChannelTypes(ChannelType.GuildVoice)
     )
     .addChannelOption((option) =>
       option
-        .setName("channel2")
+        .setName("音声を流すチャンネル")
         .setDescription("The channel that Speaker-bot join")
         .setRequired(true)
         .addChannelTypes(ChannelType.GuildVoice)
@@ -50,7 +50,9 @@ module.exports = {
     const voiceChannel2 = interaction.options.getChannel("channel2");
     if (voiceChannel1 && voiceChannel2) {
       if (voiceChannel1 === voiceChannel2) {
-        await interaction.reply("同じ VC には参加できません🥺");
+        await interaction.reply(
+          "リスナーとスピーカーを同じ VC に参加させることはできません🥺"
+        );
         return;
       }
       const guildId = interaction.guildId;
