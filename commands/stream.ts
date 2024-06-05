@@ -77,7 +77,7 @@ module.exports = {
         return;
       }
 
-      const connection1 = joinVoiceChannel({
+      const listenerConnection = joinVoiceChannel({
         group: "listener",
         guildId: guildId,
         channelId: voiceChannel1.id,
@@ -85,7 +85,7 @@ module.exports = {
         selfMute: true,
         selfDeaf: false,
       });
-      const connection2 = joinVoiceChannel({
+      const speakerConnection = joinVoiceChannel({
         group: "speaker",
         guildId: guildId,
         channelId: voiceChannel2.id,
