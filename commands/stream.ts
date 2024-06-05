@@ -20,6 +20,13 @@ import { autoCompleteChannels } from "../components/autoCompleteChannels";
 
 // process.on("warning", (e) => console.warn(e.stack));
 
+const deleteMixerListeners = (mixer: AudioMixer.Mixer) => {
+  mixer.removeAllListeners("end");
+  mixer.removeAllListeners("finish");
+  mixer.removeAllListeners("close");
+  mixer.removeAllListeners("error");
+};
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("stream")
@@ -132,10 +139,7 @@ module.exports = {
           frameSize: 960,
         });
         const p = audioStream.pipe(opus_decoder).pipe(standaloneInput);
-        mixer.removeAllListeners("end");
-        mixer.removeAllListeners("finish");
-        mixer.removeAllListeners("close");
-        mixer.removeAllListeners("error");
+        deleteMixerListeners(mixer);
 
         audioStream.on("end", () => {
           if (mixer != null) {
