@@ -3,9 +3,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const discord_js_1 = require("discord.js");
+const fastify_1 = __importDefault(require("fastify"));
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
-const discord_js_1 = require("discord.js");
 const LISTENER_TOKEN = process.env.LISTENER_TOKEN;
 const SPEAKER_TOKEN = process.env.SPEAKER_TOKEN;
 if (!LISTENER_TOKEN) {
@@ -94,3 +95,21 @@ client2.once(discord_js_1.Events.ClientReady, (c) => {
 });
 client1.login(LISTENER_TOKEN);
 client2.login(SPEAKER_TOKEN);
+const server = (0, fastify_1.default)({
+    logger: true,
+});
+server.get("/", async (request, reply) => {
+    return { hello: "world" };
+});
+const start = async () => {
+    try {
+        const port = Number(process.env.PORT) || 8000;
+        const address = await server.listen({ port, host: "0.0.0.0" });
+        server.log.info(`server listening on ${address}`);
+    }
+    catch (err) {
+        server.log.error(err);
+        process.exit(1);
+    }
+};
+start();
