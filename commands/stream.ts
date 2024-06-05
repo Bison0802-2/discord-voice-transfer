@@ -149,6 +149,7 @@ module.exports = {
         });
       });
       await interaction.reply("VCを中継します！");
+      return [listenerConnection, speakerConnection];
     } else {
       await interaction.reply("BOTを参加させるVCを指定してください！");
     }
