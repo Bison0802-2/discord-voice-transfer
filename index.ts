@@ -1,8 +1,8 @@
-import fs from "node:fs";
-import path from "node:path";
-
 import { VoiceConnection } from "@discordjs/voice";
 import { Client, Collection, Events, GatewayIntentBits } from "discord.js";
+import fastify from "fastify";
+import fs from "node:fs";
+import path from "node:path";
 
 const LISTENER_TOKEN = process.env.LISTENER_TOKEN;
 const SPEAKER_TOKEN = process.env.SPEAKER_TOKEN;
@@ -110,3 +110,24 @@ client2.once(Events.ClientReady, (c) => {
 
 client1.login(LISTENER_TOKEN);
 client2.login(SPEAKER_TOKEN);
+
+const server = fastify({
+  logger: true,
+});
+
+server.get("/", async (request, reply) => {
+  return { hello: "world" };
+});
+
+const start = async () => {
+  try {
+    const port = Number(process.env.PORT) || 8000;
+    const address = await server.listen({ port, host: "0.0.0.0" });
+    server.log.info(`server listening on ${address}`);
+  } catch (err) {
+    server.log.error(err);
+    process.exit(1);
+  }
+};
+
+start();
