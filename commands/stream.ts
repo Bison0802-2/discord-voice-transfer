@@ -97,15 +97,22 @@ module.exports = {
         channels: 2,
         bitDepth: 16,
         sampleRate: 48000,
-        // clearInterval: 250,
       });
-      // Listener-botが参加しているVCで誰かが話し出したら実行
-      connection1.receiver.speaking.on("start", (userId) => {
-        const audioStream = connection1.receiver.subscribe(userId, {
+      const handleSpeaking = (userId: string) => {
+        const player = createAudioPlayer({
+          behaviors: {
+            noSubscriber: NoSubscriberBehavior.Play,
+          },
+        });
+        speakerConnection.subscribe(player);
+        const resource = createAudioResource(mixer as unknown as Readable, {
+          inputType: StreamType.Raw,
+        });
+        player.play(resource);
+
+        const audioStream = listenerConnection.receiver.subscribe(userId, {
           end: {
             behavior: EndBehaviorType.AfterSilence,
-            // Opusの場合、100msだと短過ぎるのか、エラー落ちするため1000msに設定
-            // Rawに変換する場合、1000msだと長過ぎるのか、エラー落ちするため100msに設定
             duration: 100,
           },
         });
@@ -115,9 +122,7 @@ module.exports = {
           sampleRate: 48000,
           volume: 100,
         });
-        const audioMixer = mixer;
-        audioMixer.addInput(standaloneInput);
-        // VCの音声取得機能
+        mixer.addInput(standaloneInput);
 
         const opus_decoder = new Prism.opus.Decoder({
           rate: 48000,
@@ -125,29 +130,24 @@ module.exports = {
           frameSize: 960,
         });
         const p = audioStream.pipe(opus_decoder).pipe(standaloneInput);
-        // 音声をVCに流す機能
-        const player = createAudioPlayer({
-          behaviors: {
-            // 聞いている人がいなくても音声を中継してくれるように設定
-            noSubscriber: NoSubscriberBehavior.Play,
-          },
-        });
-        const resource = createAudioResource(mixer as unknown as Readable, {
-          // VCから取得してきた音声はOpus型なので、Opusに設定
-          inputType: StreamType.Raw,
-        });
-        player.play(resource);
-        connection2.subscribe(player);
+        mixer.removeAllListeners("end");
+        mixer.removeAllListeners("finish");
+        mixer.removeAllListeners("close");
+        mixer.removeAllListeners("error");
+
         audioStream.on("end", () => {
-          if (this.audioMixer != null) {
-            this.audioMixer.removeInput(standaloneInput);
+          if (mixer != null) {
+            mixer.removeInput(standaloneInput);
             opus_decoder.destroy();
             standaloneInput.destroy();
             audioStream.destroy();
             p.destroy();
           }
         });
-      });
+      };
+
+      listenerConnection.receiver.speaking.on("start", handleSpeaking);
+
       await interaction.reply("VCを中継します！");
       return [listenerConnection, speakerConnection];
     } else {
