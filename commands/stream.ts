@@ -18,6 +18,8 @@ import * as Prism from "prism-media";
 import { Readable } from "stream";
 import { autoCompleteChannels } from "../components/autoCompleteChannels";
 
+// process.on("warning", (e) => console.warn(e.stack));
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("stream")
