@@ -28,19 +28,24 @@ const AudioMixer = __importStar(require("audio-mixer"));
 const discord_js_1 = require("discord.js");
 const Prism = __importStar(require("prism-media"));
 const autoCompleteChannels_1 = require("../components/autoCompleteChannels");
-// EventEmitter.defaultMaxListeners = 5; // 必要に応じて増やす
-process.on("warning", (e) => console.warn(e.stack));
+// process.on("warning", (e) => console.warn(e.stack));
+const deleteMixerListeners = (mixer) => {
+    mixer.removeAllListeners("end");
+    mixer.removeAllListeners("finish");
+    mixer.removeAllListeners("close");
+    mixer.removeAllListeners("error");
+};
 module.exports = {
     data: new discord_js_1.SlashCommandBuilder()
         .setName("stream")
         .setDescription("VCを中継。")
         .addChannelOption((option) => option
-        .setName("channel1")
+        .setName("聞きたいチャンネル")
         .setDescription("The channel that Listener-bot join")
         .setRequired(true)
         .addChannelTypes(discord_js_1.ChannelType.GuildVoice))
         .addChannelOption((option) => option
-        .setName("channel2")
+        .setName("音声を流すチャンネル")
         .setDescription("The channel that Speaker-bot join")
         .setRequired(true)
         .addChannelTypes(discord_js_1.ChannelType.GuildVoice)),
@@ -48,12 +53,11 @@ module.exports = {
         await (0, autoCompleteChannels_1.autoCompleteChannels)(interaction);
     },
     async execute(interaction, listenerClient, speakerClient) {
-        console.log("stream command");
         const voiceChannel1 = interaction.options.getChannel("channel1");
         const voiceChannel2 = interaction.options.getChannel("channel2");
         if (voiceChannel1 && voiceChannel2) {
             if (voiceChannel1 === voiceChannel2) {
-                await interaction.reply("同じ VC には参加できません🥺");
+                await interaction.reply("リスナーとスピーカーを同じ VC に参加させることはできません🥺");
                 return;
             }
             const guildId = interaction.guildId;
@@ -93,7 +97,6 @@ module.exports = {
                 sampleRate: 48000,
             });
             const handleSpeaking = (userId) => {
-                console.log("I'm listening to", userId);
                 const player = (0, voice_1.createAudioPlayer)({
                     behaviors: {
                         noSubscriber: voice_1.NoSubscriberBehavior.Play,
@@ -123,29 +126,10 @@ module.exports = {
                     frameSize: 960,
                 });
                 const p = audioStream.pipe(opus_decoder).pipe(standaloneInput);
-                audioStream.on("error", (e) => {
-                    console.error("audioStream Err", e);
-                });
-                opus_decoder.on("error", (e) => {
-                    console.error("opus_decoder Err", e);
-                });
-                standaloneInput.on("error", (e) => {
-                    console.error("standaloneInput Err", e);
-                });
-                player.on("error", (e) => {
-                    console.error("player Err", e);
-                });
-                p.on("error", (e) => {
-                    console.error("p Err", e);
-                });
-                // mixer.removeAllListeners("end");
-                // mixer.removeAllListeners("finish");
-                // mixer.removeAllListeners("close");
-                // mixer.removeAllListeners("error");
+                deleteMixerListeners(mixer);
                 audioStream.on("end", () => {
                     if (mixer != null) {
                         mixer.removeInput(standaloneInput);
-                        console.log(`I'm no longer listening to ${userId}`);
                         opus_decoder.destroy();
                         standaloneInput.destroy();
                         audioStream.destroy();
