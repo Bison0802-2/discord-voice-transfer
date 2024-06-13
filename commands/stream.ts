@@ -122,8 +122,8 @@ module.exports = {
 
         const audioStream = listenerConnection.receiver.subscribe(userId, {
           end: {
-            behavior: EndBehaviorType.AfterSilence,
-            duration: 100,
+            behavior: EndBehaviorType.AfterInactivity,
+            duration: 10000000000,
           },
         });
         const standaloneInput = new AudioMixer.Input({
@@ -155,7 +155,7 @@ module.exports = {
 
       listenerConnection.receiver.speaking.on("start", handleSpeaking);
 
-      await interaction.reply("VCを中継します！");
+      // await interaction.reply("VCを中継します！");
       return [listenerConnection, speakerConnection];
     } else {
       await interaction.reply("BOTを参加させるVCを指定してください！");
