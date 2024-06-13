@@ -123,7 +123,7 @@ module.exports = {
         const audioStream = listenerConnection.receiver.subscribe(userId, {
           end: {
             behavior: EndBehaviorType.AfterInactivity,
-            duration: 10000000000,
+            duration: 50,
           },
         });
         const standaloneInput = new AudioMixer.Input({
