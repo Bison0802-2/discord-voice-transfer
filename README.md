@@ -10,7 +10,8 @@ discordの開発者画面を開いて、**BOT**タブのトークンを登録す
 
 ```
 heroku login
-geroku create
+heroku create
+git push heroku main
 ```
 
 ```
