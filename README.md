@@ -10,13 +10,32 @@ discordの開発者画面を開いて、**BOT**タブのトークンを登録す
 
 ```
 heroku login
-heroku create discord-bot-bison # すでにあったらいらんかも
+heroku create discord-bot-bison # すでにあったら不要
 heroku stack:set container -a discord-bot-bison
 heroku container:push web -a discord-bot-bison
 ```
 
+環境変数設定　(最初の1回)
+```
+heroku config:set LISTENER_CLIENT_ID=${LISTENER_CLIENT_ID} -a discord-bot-bison
+heroku config:set LISTENER_TOKEN=${LISTENER_TOKEN} -a discord-bot-bison
+heroku config:set SPEAKER_CLIENT_ID=${SPEAKER_CLIENT_ID} -a discord-bot-bison
+heroku config:set SPEAKER_TOKEN=${SPEAKER_TOKEN} -a discord-bot-bison
+```
+
+起動　(最初の1回)
 ```
 heroku container:release web -a discord-bot-bison
+```
+
+起動
+```
+heroku ps:scale web=1 -a discord-bot-bison
+```
+
+停止
+```
+heroku ps:scale web=0 -a discord-bot-bison
 ```
 
 ## Discord上での使い方

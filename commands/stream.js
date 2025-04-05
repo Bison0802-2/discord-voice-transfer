@@ -15,13 +15,23 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 }) : function(o, v) {
     o["default"] = v;
 });
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
 const voice_1 = require("@discordjs/voice");
 const AudioMixer = __importStar(require("audio-mixer"));
@@ -57,22 +67,34 @@ module.exports = {
         const voiceChannel2 = interaction.options.getChannel("音声を流すチャンネル");
         if (voiceChannel1 && voiceChannel2) {
             if (voiceChannel1 === voiceChannel2) {
-                await interaction.reply("リスナーとスピーカーを同じ VC に参加させることはできません🥺");
+                await interaction.reply({
+                    content: "同じ VC に参加することはできません🥺",
+                    ephemeral: true,
+                });
                 return;
             }
             const guildId = interaction.guildId;
             if (!guildId) {
-                await interaction.reply("このコマンドはサーバー内でのみ使用できます。");
+                await interaction.reply({
+                    content: "このコマンドはサーバー内でのみ使用できます。",
+                    ephemeral: true,
+                });
                 return;
             }
             const listenerVoiceAdapterCreator = listenerClient.guilds.cache.get(guildId)?.voiceAdapterCreator;
             const speakerVoiceAdapterCreator2 = speakerClient.guilds.cache.get(guildId)?.voiceAdapterCreator;
             if (!listenerVoiceAdapterCreator) {
-                await interaction.reply("Listener-botがこのサーバーに参加していません。");
+                await interaction.reply({
+                    content: "Listener-botがこのサーバーに参加していません。",
+                    ephemeral: true,
+                });
                 return;
             }
             if (!speakerVoiceAdapterCreator2) {
-                await interaction.reply("Speaker-botがこのサーバーに参加していません。");
+                await interaction.reply({
+                    content: "Speaker-botがこのサーバーに参加していません。",
+                    ephemeral: true,
+                });
                 return;
             }
             const listenerConnection = (0, voice_1.joinVoiceChannel)({
@@ -138,11 +160,14 @@ module.exports = {
                 });
             };
             listenerConnection.receiver.speaking.on("start", handleSpeaking);
-            // await interaction.reply("VCを中継します！");
+            await interaction.reply({ content: "VCを中継します！", ephemeral: true });
             return [listenerConnection, speakerConnection];
         }
         else {
-            await interaction.reply("BOTを参加させるVCを指定してください！");
+            await interaction.reply({
+                content: "BOTを参加させるVCを指定してください！",
+                ephemeral: true,
+            });
         }
     },
 };

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.autoCompleteChannels = void 0;
+exports.autoCompleteChannels = autoCompleteChannels;
 async function autoCompleteChannels(interaction) {
     const focusedValue = interaction.options.getFocused();
     const vc = interaction.options.get("channel1");
@@ -23,4 +23,3 @@ async function autoCompleteChannels(interaction) {
     }))
         .slice(0, 25));
 }
-exports.autoCompleteChannels = autoCompleteChannels;
