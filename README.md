@@ -1,21 +1,27 @@
 # stream-bot
 ## 使い方
-* どっかしらのサイトを参考にして、下記のものを入れる。
-    - discord.js (14.7.1)
-    - node.js (18.13.0)
-    - npm (8.19.3)
+* direnvを用いて環境変数の設定をする。``
+`.envrc template` をコピーし、`.envrc`を作成。discordのdevelopper画面を参考にしつつ、中身を記載。
+discordの開発者画面を開いて、**BOT**タブのトークンを登録する！！！それっぽいのが他のタブにもあるが間違えないようにする。
+`direnv allow` を実行。
+`docker-compose up`
 
-* Botを２つ作成。
+## herokuによるデプロイ
 
-* `config copy.json`の名前を`config.json`に変更して中身を自分の環境に合わせて編集する。
+```
+heroku login
+geroku create
+```
 
-* `.zip`でダウンロード、展開。
+```
+docker-compose up
+```
 
-* `index.js`の階層でコマンドプロンプト等を開き、`npm i`を実行。
+```
+heroku container:push discord-bot
+```
 
-* `index.js`の階層でコマンドプロンプト等を開き、`node deploy-commands.js`を実行。
-
-* `index.js`の階層でコマンドプロンプト等を開き、`node index.js`を実行。
+## Discord上での使い方
 
 * BOTに`Pong!`と返信してほしい時
     - `/ping`を実行。
