@@ -10,16 +10,13 @@ discordの開発者画面を開いて、**BOT**タブのトークンを登録す
 
 ```
 heroku login
-heroku create
-git push heroku main
+heroku create discord-bot-bison # すでにあったらいらんかも
+heroku stack:set container -a discord-bot-bison
+heroku container:push web -a discord-bot-bison
 ```
 
 ```
-docker-compose up
-```
-
-```
-heroku container:push discord-bot
+heroku container:release web -a discord-bot-bison
 ```
 
 ## Discord上での使い方

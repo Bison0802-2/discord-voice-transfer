@@ -1,4 +1,4 @@
-FROM node:21.6.0-slim as node
+FROM node:23.11.0-slim as node
 
 RUN apt-get update && apt-get install -y python3 python3-pip make g++ curl
 
